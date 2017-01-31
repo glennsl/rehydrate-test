@@ -6,7 +6,7 @@ type todo = {id: string, title: string, completed: bool};
 
 module TodoItem = {
   include ReactRe.Component.Stateful.InstanceVars;
-  let name = "TodoItemRe";
+
   type props = {
     todo,
     editing: bool,
@@ -18,8 +18,12 @@ module TodoItem = {
   };
   type state = {editText: string};
   type instanceVars = {mutable editFieldRef: option ReactRe.reactRef};
+
+  let name = "TodoItemRe";
+
   let getInstanceVars () => {editFieldRef: None};
   let getInitialState props => {editText: props.todo.title};
+
   let handleSubmit {props, state} event =>
     switch (String.trim state.editText) {
     | "" =>
@@ -29,10 +33,12 @@ module TodoItem = {
       props.onSave nonEmptyValue;
       Some {editText: nonEmptyValue}
     };
+
   let handleEdit {props} event => {
     props.onEdit ();
     Some {editText: props.todo.title}
   };
+
   let handleKeyDown ({props} as componentBag) event =>
     if (event##which === escapeKey) {
       props.onCancel event;
@@ -44,8 +50,10 @@ module TodoItem = {
     } else {
       None
     };
+
   let handleChange {props} event =>
     props.editing ? Some {editText: ReasonJs.Document.value event##target} : None;
+
   let setEditFieldRef {instanceVars} r => instanceVars.editFieldRef = Some r;
 
   /**
@@ -63,10 +71,12 @@ module TodoItem = {
       None
     | _ => None
     };
+
   let render {props, state, updater, refSetter} => {
     let {todo, editing, onDestroy, onToggle} = props;
     let className =
       [todo.completed ? "completed" : "", editing ? "editing" : ""] |> String.concat " ";
+
     <li className>
       <div className="view">
         <input

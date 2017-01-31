@@ -1,19 +1,18 @@
 open Constants;
 
 module Logo = {
-
-  /**
-   * Include Stateful Component Base!
-   */
   include ReactRe.Component.Stateful;
+
   type state = {degrees: float, velocity: float, drag: float, lastMs: float};
   type props = {message: string};
+
   let getInitialState props => {
     drag: mouseUpDrag,
     degrees: 0.0,
     velocity: 0.1,
     lastMs: ReasonJs.Date.now ()
   };
+
   let componentDidMount {props, state, updater, setState} => {
     let rec onAnimationFrame () => {
       let stateSetter {props, state} => {
@@ -30,6 +29,7 @@ module Logo = {
     ReasonJs.requestAnimationFrame onAnimationFrame;
     None
   };
+
   let name = "Logo";
   let renderGraphic rotationStyle =>
     <g fill="none" stroke="none">
@@ -49,19 +49,14 @@ module Logo = {
       </g>
     </g>;
 
-  /**
-   * On Mouse Up.
-   */
   let handleMouseUp {props, state, updater} event => {
     let withAccel = state.velocity +. clickAccel;
     let nextVelocity = withAccel < maxVel ? withAccel : maxVel;
     Some {...state, velocity: nextVelocity, drag: mouseUpDrag}
   };
 
-  /**
-   * On Mouse Down.
-   */
   let handleMouseDown {props, state} event => Some {...state, drag: mouseDownDrag};
+
   let render {props, state, updater} => {
     let transform = Printf.sprintf "rotate(%fdeg)" state.degrees;
     /* To create JS Objects in Reason, */

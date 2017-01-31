@@ -1,6 +1,6 @@
 module TodoFooter = {
   include ReactRe.Component;
-  let name = "TodoFooterRe";
+
   type showingState =
     | AllTodos
     | ActiveTodos
@@ -11,20 +11,26 @@ module TodoFooter = {
     nowShowing: showingState,
     onClearCompleted: ReactRe.event => unit
   };
+
+  let name = "TodoFooterRe";
+
   let render {props} => {
     let activeTodoWord = props.count === 1 ? "item" : "items";
+
     let clearButton =
       props.completedCount > 0 ?
         <button className="clear-completed" onClick=props.onClearCompleted>
           (ReactRe.stringToElement "Clear completed")
         </button> :
         ReactRe.nullElement;
+
     let (all, active, completed) =
       switch props.nowShowing {
       | AllTodos => ("selected", "", "")
       | ActiveTodos => ("", "selected", "")
       | CompletedTodos => ("", "", "selected")
       };
+
     <footer className="footer">
       <span className="todo-count">
         <strong> (ReactRe.stringToElement (string_of_int props.count)) </strong>

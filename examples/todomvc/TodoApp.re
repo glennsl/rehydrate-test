@@ -3,15 +3,12 @@ type router = Js.t {. init : (string => unit) [@bs.meth]};
 external routerMake : Js.t {..} => router = "Router" [@@bs.module "director"] [@@bs.new];
 
 let enterKey = 13;
-
 let namespace = "reason-react-todos";
-
 let saveLocally todos => ReasonJs.LocalStorage.setItem namespace (ReasonJs.JSON.stringify todos);
-
 module Top = {
   module TodoApp = {
     include ReactRe.Component.Stateful;
-    let name = "TodoAppRe";
+
     type props = unit;
     type state = {
       nowShowing: TodoFooter.TodoFooter.showingState,
@@ -19,6 +16,9 @@ module Top = {
       newTodo: string,
       todos: list TodoItem.todo
     };
+
+    let name = "TodoAppRe";
+
     let getInitialState props => {
       let todos =
         switch (Js.Null.to_opt (ReasonJs.LocalStorage.getItem namespace)) {
@@ -27,6 +27,7 @@ module Top = {
         };
       {nowShowing: AllTodos, editing: None, newTodo: "", todos}
     };
+
     let componentDidMount {updater} => {
       let f1 {state} () => Some {...state, nowShowing: AllTodos};
       let f2 {state} () => Some {...state, nowShowing: ActiveTodos};
@@ -35,8 +36,10 @@ module Top = {
       router##init "/";
       None
     };
+
     let handleChange {state} event =>
       Some {...state, newTodo: ReasonJs.Document.value event##target};
+
     let handleNewTodoKeyDown {props, state} event =>
       if (event##keyCode === enterKey) {
         event##preventDefault ();
@@ -53,6 +56,7 @@ module Top = {
       } else {
         None
       };
+
     let toggleAll {state} event => {
       let checked = ReasonJs.Document.checked event##target;
       let todos =
@@ -60,6 +64,7 @@ module Top = {
       saveLocally todos;
       Some {...state, todos}
     };
+
     let toggle todoToToggle {state} event => {
       let todos =
         List.map
@@ -72,11 +77,13 @@ module Top = {
       saveLocally todos;
       Some {...state, todos}
     };
+
     let destroy todo {state} event => {
       let todos = List.filter (fun candidate => candidate !== todo) state.todos;
       saveLocally todos;
       Some {...state, todos}
     };
+
     let edit todo {state} event => Some {...state, editing: Some TodoItem.(todo.id)};
     let save todoToSave {state} text => {
       let todos =
@@ -84,49 +91,51 @@ module Top = {
           (fun todo => todo == todoToSave ? {...todo, TodoItem.title: text} : todo) state.todos;
       Some {...state, editing: None, todos}
     };
+
     let cancel {state} event => Some {...state, editing: None};
     let clearCompleted {state} event => {
       let todos = List.filter (fun todo => not TodoItem.(todo.completed)) state.todos;
       saveLocally todos;
       Some {...state, todos}
     };
+
     let render {state, updater} => {
       let {todos, editing} = state;
       let todoItems =
-        todos |>
-        List.filter (
-          fun todo =>
-            TodoItem.(
-              switch state.nowShowing {
-              | ActiveTodos => not todo.completed
-              | CompletedTodos => todo.completed
-              | AllTodos => true
-              }
-            )
-        ) |>
-        List.map (
-          fun todo => {
-            let editing =
-              switch editing {
-              | None => false
-              | Some editing => editing === TodoItem.(todo.id)
-              };
-            <TodoItem
-              key=todo.id
-              todo
-              onToggle=(updater (toggle todo))
-              onDestroy=(updater (destroy todo))
-              onEdit=(updater (edit todo))
-              editing
-              onSave=(updater (save todo))
-              onCancel=(updater cancel)
-            />
-          }
-        );
+        todos
+        |> List.filter (
+            fun todo =>
+              TodoItem.(
+                switch state.nowShowing {
+                | ActiveTodos => not todo.completed
+                | CompletedTodos => todo.completed
+                | AllTodos => true
+                }
+              )
+          )
+        |> List.map (
+            fun todo => {
+              let editing =
+                switch editing {
+                | None => false
+                | Some editing => editing === TodoItem.(todo.id)
+                };
+              <TodoItem
+                key=todo.id
+                todo
+                onToggle=(updater (toggle todo))
+                onDestroy=(updater (destroy todo))
+                onEdit=(updater (edit todo))
+                editing
+                onSave=(updater (save todo))
+                onCancel=(updater cancel)
+              />
+            }
+          );
       let todosLength = List.length todos;
-      let completedCount =
-        todos |> List.filter (fun todo => TodoItem.(todo.completed)) |> List.length;
+      let completedCount = todos |> List.filter (fun todo => TodoItem.(todo.completed)) |> List.length;
       let activeTodoCount = todosLength - completedCount;
+
       let footer =
         switch (activeTodoCount, completedCount) {
         | (0, 0) => ReactRe.nullElement
@@ -138,6 +147,7 @@ module Top = {
             onClearCompleted=(updater clearCompleted)
           />
         };
+
       let main =
         todosLength === 0 ?
           ReactRe.nullElement :
@@ -150,6 +160,7 @@ module Top = {
             />
             <ul className="todo-list"> (ReactRe.arrayToElement (Array.of_list todoItems)) </ul>
           </section>;
+
       <div>
         <header className="header">
           <h1> (ReactRe.stringToElement "todos") </h1>
@@ -167,8 +178,9 @@ module Top = {
       </div>
     };
   };
-  include ReactRe.CreateComponent TodoApp;
-  let createElement = wrapProps ();
+include ReactRe.CreateComponent TodoApp;
+let createElement = wrapProps ();
+
 };
 
 ReactDOMRe.render <Top /> (ReasonJs.Document.getElementsByClassName "todoapp").(0);

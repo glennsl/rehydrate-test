@@ -29,6 +29,12 @@
         {
           "dir": "todomvc",
         },
+        {
+          "dir": "nodomvc",
+          "subdirs": [{
+            "dir": "components"
+          }]
+        },
       ],
     },
   ],
