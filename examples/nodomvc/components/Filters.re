@@ -1,33 +1,26 @@
-type filter =
-| All
-| Active
-| Completed;
-
-let filters = [All, Active, Completed];
-
-let filterToString = fun
-| All => "All"
-| Active => "Active"
-| Completed => "Completed";
 
 module Filters = {
   include ReactRe.Component;
   let name = "Filters";
 
   type props = {
-    selected: filter
+    selected: Filter.t,
+    onSelect: Filter.t => unit
   };
 
-  let render {props, updater} =>
-      <ul className="filters">
-        (ReactRe.arrayToElement (filters |> List.map (fun filter =>
-          <li>
-            <a href="#/" className=(props.selected === filter ? "selected" : "")> (ReactRe.stringToElement (filterToString filter)) </a>
-          </li>
-        ) |> Array.of_list))
-      </ul>
+
+  let render {props, updater} => {
+    let mkListItem filter =>
+      <li key=(Filter.toString filter) onClick=(fun e => props.onSelect filter)>
+        <a className=(props.selected === filter ? "selected" : "")> (ReactRe.stringToElement (Filter.toString filter)) </a>
+      </li>;
+
+    <ul className="filters">
+      (ReactRe.arrayToElement (Filter.list |> (List.map mkListItem) |> Array.of_list))
+    </ul>
+  };
 };
 
 include ReactRe.CreateComponent Filters;
-
-let createElement ::selected ::children => wrapProps { selected: selected } ::children;
+let createElement ::selected ::onSelect ::children =>
+  wrapProps { selected, onSelect } ::children;

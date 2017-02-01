@@ -33,6 +33,10 @@
           "dir": "nodomvc",
           "subdirs": [{
             "dir": "components"
+          }, {
+            "dir": "data"
+          }, {
+            "dir": "utils"
           }]
         },
       ],

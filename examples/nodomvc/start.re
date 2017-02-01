@@ -1,11 +1,9 @@
-open Components;
-
 let todos: list NodoItem.item = [{
-  id: "",
+  id: "1",
   title: "Item 1",
   completed: false
 }, {
-  id: "",
+  id: "2",
   title: "Item 2",
   completed: true
 }];

@@ -1,21 +1,31 @@
 module NodoApp = {
-  include ReactRe.Component;
+  include ReactRe.Component.Stateful;
   let name = "NodoPage";
 
-  type props = {todos: list NodoItem.item};
+  type props = {
+    todos: list NodoItem.item
+  };
+  type state = {
+    filter: Filter.t
+  };
 
-  let render {props, updater} =>
+  let getInitialState props => {
+    filter: All
+  };
+
+  let setFilter {state} filter => Some { filter: filter };
+
+  let render {props, state, updater} => {
+    let { filter } = state;
+
     <div>
-      <header className="header">
-        <h1> (ReactRe.stringToElement "todos") </h1>
-      </header>
-      <section className="main">
-        <NodoList items=props.todos />
-      </section>
-      <NodoFooter items=props.todos onClearCompleted=(fun e => ()) />
-    </div>;
+      <Header />
+      <MainSection items=props.todos filter />
+      <NodoFooter items=props.todos filter onFilterChanged=(updater setFilter) onClearCompleted=(fun e => Js.log "clear!!") />
+    </div>
+  };
 };
 
 include ReactRe.CreateComponent NodoApp;
-
-let createElement ::todos ::children => wrapProps { todos: todos } ::children;
+let createElement ::todos ::children =>
+  wrapProps { todos: todos } ::children;

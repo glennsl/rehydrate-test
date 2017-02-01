@@ -34,6 +34,5 @@ module NodoItem = {
 };
 
 include ReactRe.CreateComponent NodoItem;
-
 let createElement ::item ::onToggle ::onDestroy ::children =>
   wrapProps { item, onToggle, onDestroy } ::children;
