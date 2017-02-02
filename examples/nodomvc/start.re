@@ -1,41 +1,28 @@
-type state = {
-    mutable items: list NodoItem.t,
-    mutable selected: option string
+let getInitialState props => {
+  let todos =
+    switch (LocalStorage.get ()) {
+      | None => [Todo.make "Item 1", Todo.make "Item 2"]
+      | Some todos => ReasonJs.JSON.parse todos
+    };
+  State.({ selected: None, todos })
 };
 
-let state: state = {
-  selected: None,
-  items: [{
-    id: "1",
-    title: "Item 1",
-    completed: false,
-    created: ReasonJs.Date.make ()
-  }, {
-    id: "2",
-    title: "Item 2",
-    completed: true,
-    created: ReasonJs.Date.make ()
-  }]
-};
+let store = Store.make (getInitialState ());
+Store.subscribe store (fun state => LocalStorage.set state.todos);
 
-let render () => {
-  let { items, selected } = state;
+let render (state) => {
+  open State;
+  let { todos, selected } = state;
 
   ReactDOMRe.render
-    <NodoApp items selected />
+    <NodoApp items=todos selected store />
     (ReasonJs.Document.getElementById "nodoapp");
 };
 
 let router = Director.Router.make [
-  ("/", fun _ => {
-    state.selected = None;
-    render ()
-  }),
-  (":id", fun id => {
-    state.selected = Some id;
-    render ()
-  })
+  ("/", fun _ => Store.select store None),
+  (":id", fun id => Store.select store (Some id))
 ];
 
 Director.Router.init router;
-render ();
+Store.subscribe store render;

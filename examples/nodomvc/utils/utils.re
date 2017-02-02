@@ -26,3 +26,7 @@ external setHash: location => string => unit = "hash" [@@bs.set];
 
 let gotoHash value =>
   setHash location ("#/" ^ value);
+
+let rec isEvery predicate => fun
+| [] => true
+| [x, ...xs] => predicate x && isEvery predicate xs;

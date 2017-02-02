@@ -3,8 +3,9 @@ module NodoApp = {
   let name = "NodoPage";
 
   type props = {
-    items: list NodoItem.t,
-    selected: option string
+    items: list Todo.t,
+    selected: option string,
+    store: Store.t
   };
   type state = {
     filter: Filter.t
@@ -17,22 +18,22 @@ module NodoApp = {
   let setFilter {state} filter => Some { filter: filter };
 
   let render {props, state, updater} => {
-    let { items, selected } = props;
+    let { items, selected, store } = props;
     let { filter } = state;
 
     <div>
-      <Header />
-      <MainSection items filter selected />
+      <Header store />
+      <MainSection items filter selected store />
       <NodoFooter
         items
         filter
         onFilterChanged=(updater setFilter)
-        onClearCompleted=(fun e => Js.log "clear!!")
+        onClearCompleted=(fun e => Store.clearCompleted store)
       />
     </div>
   };
 };
 
 include ReactRe.CreateComponent NodoApp;
-let createElement ::items ::selected ::children =>
-  wrapProps { items, selected } ::children;
+let createElement ::items ::selected ::store ::children =>
+  wrapProps { items, selected, store } ::children;

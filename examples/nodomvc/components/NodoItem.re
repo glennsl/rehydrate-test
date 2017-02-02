@@ -1,19 +1,11 @@
-type t = {
-  id: string,
-  title: string,
-  completed: bool,
-  created: ReasonJs.Date.t
-};
-
 module NodoItem = {
   include ReactRe.Component.Stateful;
   let name = "NodoItem";
 
   type props = {
-    item: t,
+    item: Todo.t,
     selected: bool,
-    onToggle: ReactRe.event => unit,
-    onDestroy: ReactRe.event => unit,
+    store: Store.t
   };
   type state = {
     editing: bool
@@ -24,16 +16,21 @@ module NodoItem = {
   };
 
   let render {props, state, updater} => {
-    let { item, selected, onToggle, onDestroy } = props;
+    let { item, selected, store } = props;
     let { editing } = state;
     let className = Utils.classNames [
       ("completed", item.completed),
       ("editing", editing),
       ("selected", selected)
     ];
-    let save = updater (fun {state} text => { Js.log text; Some { editing: false } });
+    let save = updater (fun {state} text => {
+      Store.update store item text;
+      Some { editing: false }
+    });
     let edit = updater (fun {state} e => Some { editing: true });
     let select e => Utils.gotoHash item.id;
+    let toggle e => Store.toggle store item;
+    let remove e => Store.remove store item;
 
     <li className>
       <div className="view">
@@ -41,14 +38,14 @@ module NodoItem = {
           type_="checkbox"
           className="toggle"
           checked=(Js.Boolean.to_js_boolean item.completed)
-          onChange=onToggle
+          onChange=toggle
         />
 
         <label onDoubleClick=edit onClick=select>
           (ReactRe.stringToElement item.title)
         </label>
 
-        <button className="destroy" onClick=onDestroy />
+        <button className="destroy" onClick=remove />
       </div>
 
       (editing ?
@@ -63,5 +60,5 @@ module NodoItem = {
 };
 
 include ReactRe.CreateComponent NodoItem;
-let createElement ::item ::selected ::onToggle ::onDestroy ::children =>
-  wrapProps { item, selected, onToggle, onDestroy } ::children;
+let createElement ::item ::selected ::store ::children =>
+  wrapProps { item, selected, store } ::children;

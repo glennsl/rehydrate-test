@@ -10,14 +10,14 @@ module NodoFooter = {
   let name = "NodoFooter";
 
   type props = {
-    items: list NodoItem.t,
+    items: list Todo.t,
     filter: Filter.t,
     onFilterChanged: Filter.t => unit,
     onClearCompleted: ReactRe.event => unit
   };
 
   let render {props, updater} => {
-    let completedCount = props.items |> List.filter (fun item => NodoItem.(item.completed)) |> List.length;
+    let completedCount = props.items |> List.filter (fun item => Todo.(item.completed)) |> List.length;
     let activeCount = (List.length props.items) - completedCount;
 
     <footer className="footer">
