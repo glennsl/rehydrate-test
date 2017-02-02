@@ -1,5 +1,5 @@
 module ClearButton = {
-  let createElement ::onClick ::children => fun () =>
+  let createElement ::onClick ::children () =>
     <button className="clear-completed" onClick=onClick>
       (ReactRe.stringToElement "Clear completed")
     </button>;
@@ -10,7 +10,7 @@ module NodoFooter = {
   let name = "NodoFooter";
 
   type props = {
-    items: list NodoItem.item,
+    items: list NodoItem.t,
     filter: Filter.t,
     onFilterChanged: Filter.t => unit,
     onClearCompleted: ReactRe.event => unit
@@ -23,7 +23,7 @@ module NodoFooter = {
     <footer className="footer">
       <span className="todo-count">
         <strong> (ReactRe.stringToElement (string_of_int activeCount)) </strong>
-        (ReactRe.stringToElement ((Utils.pluralize "item" activeCount) ^ " left"))
+        (ReactRe.stringToElement ((Utils.pluralize " item" activeCount) ^ " left"))
       </span>
 
       <Filters selected=props.filter onSelect=props.onFilterChanged/>

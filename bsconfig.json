@@ -37,6 +37,8 @@
             "dir": "data"
           }, {
             "dir": "utils"
+          }, {
+            "dir": "vendor"
           }]
         },
       ],

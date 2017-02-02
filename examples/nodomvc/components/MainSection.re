@@ -1,5 +1,5 @@
 
-let createElement ::items ::filter ::children => fun () =>
+let createElement ::items ::filter ::selected ::children () =>
   <section className="main">
-    <NodoList items filter />
+    <NodoList items filter selected />
   </section>

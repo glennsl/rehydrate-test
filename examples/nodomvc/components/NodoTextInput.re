@@ -5,15 +5,16 @@ module NodoTextInput = {
 
   type props = {
     className: string,
-    placeholder: string,
-    onSave: string => unit
+    placeholder: option string,
+    onSave: string => unit,
+    value: option string
   };
   type state = {
     value: string
   };
 
-  let getInitialState props => {
-    value: ""
+  let getInitialState (props: props) => {
+    value: Utils.default "" props.value
   };
 
   let render ({props, state, updater}) => {
@@ -23,15 +24,16 @@ module NodoTextInput = {
 
     <input
       className
-      placeholder
+      placeholder=?placeholder
       onBlur=save
       onChange=update
       onKeyDown=(fun e => e##keyCode === 13 ? save e : ())
       value=state.value
-      autoFocus=(Js.Boolean.to_js_boolean true) />
+      autoFocus=(Js.Boolean.to_js_boolean true)
+    />
   }
 };
 
 include ReactRe.CreateComponent NodoTextInput;
-let createElement ::className ::placeholder ::onSave ::children =>
-  wrapProps {className, placeholder, onSave} ::children
+let createElement ::className ::placeholder=? ::onSave ::value=? ::children =>
+  wrapProps { className, placeholder, onSave, value } ::children

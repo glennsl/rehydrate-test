@@ -3,13 +3,24 @@ module NodoList = {
   let name = "NodoList";
 
   type props = {
-    items: list NodoItem.item,
-    filter: Filter.t
+    items: list NodoItem.t,
+    filter: Filter.t,
+    selected: option string
   };
 
   let render {props, updater} => {
     let mkNodoItem item =>
-      <NodoItem key=item.id item=item onToggle=(fun e => ()) onDestroy=(fun e => ()) />;
+      <NodoItem
+        key=item.id
+        item
+        selected=
+          (switch props.selected {
+          | None => false
+          | Some id => id === item.id
+          })
+        onToggle=(fun e => ())
+        onDestroy=(fun e => ())
+      />;
 
     <ul className="todo-list">
       (props.items
@@ -27,5 +38,5 @@ module NodoList = {
 };
 
 include ReactRe.CreateComponent NodoList;
-let createElement ::items ::filter ::children =>
-  wrapProps { items, filter } ::children;
+let createElement ::items ::filter ::selected ::children =>
+  wrapProps { items, filter, selected } ::children;
